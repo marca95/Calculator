@@ -19,7 +19,7 @@ buttons.forEach(button => {
     if (!isNaN(value) || value === '.') {
       currentValue += value;
     }
-    else if (value === '+' || value === '-' || value === '/' || value === '*' || value === 'X' || value === 'V') {
+    else if (value === '+' || value === '-' || value === '/' || value === '*' || value === '²' || value === 'V') {
       if (currentValue === '' && value === '-') {
         currentValue = '-';
       } else if (value === 'V') {
@@ -63,6 +63,51 @@ buttons.forEach(button => {
   });
 });
 
+// Pour utiliser les touches du clavier 
+
+document.addEventListener('keydown', (event) => {
+  const key = event.key;
+
+  if (!isNaN(key) || key === '.') {
+    currentValue += key;
+    screen.textContent = currentValue;
+  }
+  else if (key === '+' || key === '-' || key === '*' || key === '/' || key === '=' || key === '²') {
+    if (currentValue === '' && key === '-') {
+      currentValue = '-';
+    } else {
+      if (savedValue !== '' && currentValue !== '') {
+        savedValue = calculate(savedValue, currentValue, operator);
+        currentValue = '';
+      } else if (currentValue !== '') {
+        savedValue = currentValue;
+        currentValue = '';
+      }
+      operator = key;
+    }
+  }
+  else if (key === 'c' || key === 'C' || key === 'Delete' || key === 'delete') {
+    currentValue = '';
+    savedValue = '';
+    operator = '';
+    screen.textContent = '0';
+  }
+  else if (key === 'v' || key === 'V') {
+    currentValue = Math.sqrt(parseFloat(currentValue)).toString();
+    screen.textContent = currentValue;
+  }
+  else if (key === 'Enter') {
+    if (operator !== '' && currentValue !== '') {
+      currentValue = calculate(savedValue, currentValue, operator);
+      operator = '';
+      savedValue = '';
+      resultDisplayed = true;
+      screen.textContent = currentValue;
+    }
+  }
+});
+
+
 // Fonction de calcul
 function calculate(value1, value2, operator) {
   value1 = parseFloat(value1);
@@ -77,14 +122,15 @@ function calculate(value1, value2, operator) {
       return (value1 * value2).toString();
     case '/':
       if (value2 === 0) {
-        return 'ERROR';
+        return 'error';
       }
       return (value1 / value2).toString();
-    case 'X':
+    case '²':
       return (value1 ** value2).toString();
     default:
       return value2;
   }
 }
+
 
 
